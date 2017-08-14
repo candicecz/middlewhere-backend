@@ -1,38 +1,108 @@
-DROP DATABASE IF EXISTS dashboardly;
+DROP DATABASE IF EXISTS middlewhere;
 
-CREATE DATABASE dashboardly;
+CREATE DATABASE middlewhere;
 
-USE dashboardly;
+USE middlewhere;
 
-CREATE TABLE users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(100) NOT NULL UNIQUE,
-  password VARCHAR(60) NOT NULL,
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+CREATE TABLE `org` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(60) NOT NULL DEFAULT '',
+  `payment` varchar(100) DEFAULT NULL,
+  `code` varchar(100) DEFAULT NULL,
+  `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 
-CREATE TABLE sessions (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  userId INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-  token VARCHAR(100) NOT NULL UNIQUE
-);
 
-CREATE TABLE boards (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  ownerId INT NOT NULL REFERENCES users (id) ON DELETE SET NULL,
-  title VARCHAR(50) NOT NULL,
-  description VARCHAR(100),
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
 
-CREATE TABLE bookmarks (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  boardId INT NOT NULL REFERENCES boards (id) ON DELETE SET NULL,
-  title VARCHAR(50) NOT NULL,
-  url VARCHAR(1000) NOT NULL,
-  description VARCHAR(1000) DEFAULT NULL,
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+
+# Dump of table projects
+# ------------------------------------------------------------
+
+CREATE TABLE `projects` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL DEFAULT '',
+  `description` varchar(140) DEFAULT NULL,
+  `deadline` datetime DEFAULT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+
+
+
+
+# Dump of table sessions
+# ------------------------------------------------------------
+
+CREATE TABLE `sessions` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `token` varchar(100) NOT NULL DEFAULT '',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+
+
+
+
+# Dump of table subtasks
+# ------------------------------------------------------------
+
+CREATE TABLE `subtasks` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL DEFAULT '',
+  `milestones` varchar(100) NOT NULL DEFAULT '',
+  `completed` tinyint(1) NOT NULL,
+  `description` varchar(140) DEFAULT NULL,
+  `deadline` datetime DEFAULT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `priority` tinyint(1) DEFAULT NULL,
+  `milestoneId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+
+
+
+
+# Dump of table tasks
+# ------------------------------------------------------------
+
+CREATE TABLE `tasks` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL DEFAULT '',
+  `completed` tinyint(1) NOT NULL,
+  `description` varchar(140) DEFAULT NULL,
+  `deadline` datetime DEFAULT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `priority` tinyint(1) DEFAULT NULL,
+  `taskId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+
+
+
+
+# Dump of table users
+# ------------------------------------------------------------
+
+CREATE TABLE `users` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) NOT NULL DEFAULT '',
+  `password` varchar(60) NOT NULL DEFAULT '',
+  `org` varchar(60) NOT NULL DEFAULT '',
+  `special` tinyint(1) NOT NULL,
+  `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updtedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+
+
+
+
+# Dump of table usersForTask
+# ------------------------------------------------------------
+
+CREATE TABLE `usersForTask` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` int(11) DEFAULT NULL,
+  `taskId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)

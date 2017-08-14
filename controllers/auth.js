@@ -1,5 +1,4 @@
 const express = require('express');
-//did this worrrrkkk?
 const onlyLoggedIn = require('../lib/only-logged-in');
 var md5 = require('md5'); // for hashin emails
 
