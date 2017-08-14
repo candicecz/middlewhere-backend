@@ -1,0 +1,213 @@
+FORMAT: 1A
+
+# Middlewhere
+The Middlewhere API allows for managing projects with tasks and users assigned to them
+
+## Projects [/projects]
+A project represents the highest hierarchy of something to be completed
+
+### Retrieve a list of projects [GET /projects{?page,count}]
+
++ Parameters
+    - page: `12` (number, optional) - The page number to fetch
+        - Default: 1
+    - count: `10` (number, optional) - The number of items to fetch
+        - Default: 20
+
++ Response 200 (application/json)
+    + Attributes
+        - projects (array[ProjectWithId])
+
+
+
+### Retrieve a single project [GET /projects/{id}]
+
++ Parameters
+    - id: `123` (number, required) - The ID of the desired project
+
++ Response 200 (application/json)
+    + Attributes (ProjectWithId)
+
+
+
+### Retrieve the tasks for a single project [GET /projects/{id}/tasks]
+
++ Parameters
+    - id: `123` (number, required) - The ID of the desired project
+
++ Response 200 (application/json)
+    + Attributes
+        - tasks (array[TaskWithId])
+
+
+
+### Create a new project [POST]
+Creating a new project requires passing a session token
+
++ Request (application/json)
+    + Headers
+
+            Authorization: token xyz
+
+    + Attributes (Project)
+
++ Response 201 (application/json)
+    + Attributes (ProjectWithId)
+
+
+
+### Modify an owned project [PATCH /projects/{id}]
+Updating one's projects requires passing a session token. This endpoint only requires passing the data that changes.
+
++ Parameters
+    - id: `12` (number, required) - The unique ID of the project to be updated
+
++ Request (application/json)
+    + Headers
+
+            Authorization: token xyz
+
+    + Attributes (Project)
+
++ Response 200 (application/json)
+    + Attributes (ProjectWithId)
+
+
+
+### Create a new task under a project [POST /projects/{id}/tasks]
+Creating a task requires passing a token that proves you are the owner for the project
+
++ Parameters
+    - id: `12` (number, required) - The unique ID of the project for which to create a task
+
++ Request (application/json)
+    + Headers
+
+            Authorization: token xyz
+
+    + Attributes (Task)
+
++ Response 201 (application/json)
+    + Attributes (TaskWithId)
+
+
+
+
+
+## Task [/tasks]
+A task represents a unit of work for a project
+
+### Modify a task [PATCH /tasks/{id}]
+Modifying a task requires an access token proving you are the owner of the project for that task
+
++ Parameters
+    - id: `4954` (number, required) - The unique ID of the task to update
+
++ Request (application/json)
+    + Headers
+
+            Authorization: token xyz
+
+    + Attributes (Task)
+
++ Response 200 (application/json)
+    + Attributes (TaskWithId)
+
+
+
+
+
+## Authentication [/auth]
+
+### Create a new user (signup) [POST /auth/users]
++ Request (application/json)
+    + Attributes (AuthData)
+
++ Response 201 (application/json)
+    + Attributes (UserWithId)
+
+
+
+### Create a new session (login) [POST /auth/sessions]
++ Request (application/json)
+    + Attributes (AuthData)
+
++ Response 201 (application/json)
+    + Attributes (Session)
+
+
+
+### Delete a session (logout) [DELETE /auth/sessions]
+Requesting this endpoint will delete the session associated with the token in the `Authorization` header.
+
++ Request (application/json)
+    + Headers
+
+            Authorization: token xyz
+
++ Response 204
+
+
+
+### Retrieve current user [GET /auth/me]
+Requesting this endpoint with an Authorization token will return the user that this token belongs to.
+
++ Request
+    + Headers
+    
+            Authorization: token xyz
+
++ Response 200 (application/json)
+    + Attributes (UserWithId)
+
+
+
+
+# Data Structures
+
+## Timestamps (object)
+- createdAt: `2015-01-20T09:48:32.066Z` (string) - The creation date
+- updatedAt: `2017-05-04T14:29:42.490Z` (string) - The last update date
+
+## Project (object)
+- title: `Mobile App for employee management` (string) - The name of the project
+- description: `This mobile app will be use all the managers` (string) - The description of the project
+
+## ProjectWithId (object)
+- id: `123` (number) - The unique ID of the project
+- ownerId: `5` (number, required) - The unique ID of the user who owns the project
+- progressPct: `51` (number, required) - Progress percentage for the project
+- Include Project
+- Include Timestamps
+
+## Task (object)
+- title: `Create the mockups for the mobile app` (string, required) - The title of the task
+- description: `We need mockups for the signup,login,list of boards, and single board view` - An optional description
+- deadline: `2015-01-20` (string) - The deadline for the project
+- priority: `low` (string) - The priority of the task low|normal|high
+- projectId: `54` (number) - The project that the task belongs to
+
+## TaskWithId (object)
+- id: `55` (number) - The unique ID of the bookmark
+- completed: `true` (boolean) - Whether the task has been completed
+- Include Task
+- Include Timestamps
+
+## AuthData (object)
+- email: `hunter@thompson.com` (string) - The email that will be used as a login username
+- password: `Hunter2` (string) - The desired password for the new user
+
+## User (object)
+- email: `hunter@thompson.com` (string) - The email of the user
+- firstName: `Hunter` (string) - The first name of the user
+- lastName: `Thompson` (string) - The last name of the user
+
+
+## UserWithId (object)
+- id: `123` (number) - The unique ID of the user
+- avatarUrl: `https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50` (string) - The profile pic of the user
+- Include User
+- Include Timestamps
+
+## Session (object)
+- token: `uep52qo8wfyh97b24fjafjewi9bb0r24` (string) - The session token

@@ -14,22 +14,22 @@ const morgan = require('morgan');
 const checkLoginToken = require('./lib/check-login-token.js');
 
 // Data loader
-const DashboardlyDataLoader = require('./lib/dashboardly.js');
+const middlewhereDataLoader = require('./lib/middlewhere.js');
 
 // Controllers
 const authController = require('./controllers/auth.js');
-const boardsController = require('./controllers/boards.js');
-const bookmarksController = require('./controllers/bookmarks.js');
+const projectsController = require('./controllers/projects.js');
+const tasksController = require('./controllers/tasks.js');
 
 
 // Database / data loader initialization
 const connection = mysql.createPool({
   user: 'root',
-  password: 'root',
-  database: 'dashboardly'
+  password: '18322',
+  database: 'middlewhere'
 });
 
-const dataLoader = new DashboardlyDataLoader(connection);
+const dataLoader = new middlewhereDataLoader(connection);
 
 
 // Express initialization
@@ -55,8 +55,8 @@ app.use(cors({
 
 
 app.use('/auth', authController(dataLoader));
-app.use('/boards', boardsController(dataLoader));
-app.use('/bookmarks', bookmarksController(dataLoader));
+app.use('/projects', projectsController(dataLoader));
+app.use('/tasks', tasksController(dataLoader));
 
 // Start the server
 const port = process.env.PORT || 3000;
