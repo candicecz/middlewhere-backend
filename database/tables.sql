@@ -13,45 +13,44 @@ USE middlewhere;
 --   `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 --   PRIMARY KEY (`id`)
 
+DROP TABLE IF EXISTS `middlewhere`.`users` ;
+CREATE TABLE middlewhere.`users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) NOT NULL DEFAULT '',
+  `password` varchar(60) NOT NULL DEFAULT '',
+  `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
 
 
-
-# Dump of table projects
-# ------------------------------------------------------------
-
-CREATE TABLE `projects` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `middlewhere`.`projects` ;
+CREATE TABLE middlewhere.`projects` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '',
   `description` varchar(140) DEFAULT NULL,
-  `adminUserId` int(11) NOT NULL, --foreign key
+  `adminUserId` int(11) NOT NULL,
   `deadline` datetime DEFAULT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-
-  --make sql queries necesseries to generate progress
-  ---- retrieve a list of all projects along with a % completion
-  ---- retrieve a list of all projects where a certain userId has some tasks assigned
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (adminUserId) REFERENCES users (id)
+);
 
 
 
-
-# Dump of table sessions
-# ------------------------------------------------------------
-
-CREATE TABLE `sessions` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `middlewhere`.`sessions` ;
+CREATE TABLE middlewhere.`sessions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
   `token` varchar(100) NOT NULL DEFAULT '',
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
+);
 
-
-
-
-# Dump of table subtasks
-# ------------------------------------------------------------
+-- # Dump of table subtasks
+-- # ------------------------------------------------------------
 
 -- CREATE TABLE `subtasks` (
 --   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -67,11 +66,7 @@ CREATE TABLE `sessions` (
 --   PRIMARY KEY (`id`)
 
 
-
-
-# Dump of table tasks
-# ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `tasks` ;
 CREATE TABLE `tasks` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '',
@@ -82,34 +77,18 @@ CREATE TABLE `tasks` (
   `priority` enum('low', 'normal', 'high') DEFAULT 'normal',
   `projectId` int(11) NOT NULL, -- add foreign key
   `completed` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (projectId) REFERENCES projects (id)
+);
 
 
-
-
-# Dump of table users
-# ------------------------------------------------------------
-
-CREATE TABLE `users` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(100) NOT NULL DEFAULT '',
-  `password` varchar(60) NOT NULL DEFAULT '',
-  `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-
-
-
-
-# Dump of table usersForTask
-# ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `usersForTask` ;
 CREATE TABLE `usersForTask` (
-  `userId` int(11) DEFAULT NULL,
-  `taskId` int(11) DEFAULT NULL,
+  `userId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`userId`,`taskId`) -- foreign keys for user and tasks
-
-
-
+  PRIMARY KEY (`userId`,`taskId`),
+  FOREIGN KEY (userId) REFERENCES users (id),
+  FOREIGN KEY (taskId) REFERENCES tasks (id)
+);
