@@ -1,6 +1,6 @@
 const express = require('express');
 const onlyLoggedIn = require('../lib/only-logged-in');
-var md5 = require('md5'); // for hashin emails
+var md5 = require('md5'); // for hashing emails for Gravatar
 
 
 module.exports = (dataLoader) => {
