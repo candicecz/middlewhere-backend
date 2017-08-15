@@ -68,7 +68,7 @@ CREATE TABLE middlewhere.`sessions` (
 
 DROP TABLE IF EXISTS `tasks` ;
 CREATE TABLE `tasks` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '',
   `description` varchar(140) DEFAULT NULL,
   `deadline` datetime DEFAULT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE `tasks` (
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `priority` enum('low', 'normal', 'high') DEFAULT 'normal',
   `projectId` int(11) NOT NULL, -- add foreign key
-  `completed` tinyint(1) NOT NULL,
+  `completed` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (projectId) REFERENCES projects (id)
 );

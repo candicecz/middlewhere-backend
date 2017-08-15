@@ -42,6 +42,7 @@ app.use(function(req, res, next) {
   next();
 });
 
+
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(checkLoginToken(dataLoader));
@@ -49,7 +50,7 @@ app.use(checkLoginToken(dataLoader));
 
 app.use(cors({
   allowedOrigins: [
-    'https://23ab8953.ngrok.io', 'http://localhost:3000'
+    'http://localhost:3000','https://23ab8953.ngrok.io'
   ],
 }));
 
