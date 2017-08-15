@@ -25,9 +25,6 @@ module.exports = (dataLoader) => {
 
   // Create a new project
   projectsController.post('/', onlyLoggedIn, (req, res) => {
-
-    console.log('Im alive');
-
     const fake_data =  {
       ownerId: 24,
       title: 'how to fly high',
