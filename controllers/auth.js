@@ -5,14 +5,15 @@ var md5 = require('md5'); // for hashing emails for Gravatar
 
 module.exports = (dataLoader) => {
   const authController = express.Router();
-
   // Create a new user (signup)
   authController.post('/users', (req, res) => {
     const userData = {
       email: req.body.email,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
       password: req.body.password
     };
-    console.log('16 auth', req.body);
+    console.log(userData);
     dataLoader.createUser(userData)
     .then(ans => {
       const email = ans.email;
@@ -22,9 +23,9 @@ module.exports = (dataLoader) => {
       return ans;
     })
     .then(user => res.status(201).json(user))
-    .catch(err => res.status(400).json(err));
+    .catch(err => { console.log(err);
+      res.status(400).json(err)});
   });
-
 
   // Create a new session (login)
   authController.post('/sessions', (req, res) => {
@@ -32,7 +33,7 @@ module.exports = (dataLoader) => {
       req.body.email,
       req.body.password
     )
-    .then(token => res.status(201).json({ token: token }))
+    .then(token => res.status(201).json({ token: token })) // returns token
     .catch(err => res.status(401).json(err));
   });
 
@@ -58,14 +59,13 @@ module.exports = (dataLoader) => {
 
   // Retrieve current user
   authController.get('/me', onlyLoggedIn, (req, res) => {
-    // TODO: this is up to you to implement :)
+    // console.log('60' , req.sessionToken);
     dataLoader.getUserFromSession(req.sessionToken)
     .then(ans => {
       const email = ans.users_email;
       const HASH = md5(email);
       const hashed = "https://www.gravatar.com/avatar/"+HASH;
       ans.avatarUrl = hashed;
-      console.log(ans);
       return ans;
     })
     .then(ans => res.status(200).json(ans))

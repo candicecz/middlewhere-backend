@@ -5,17 +5,15 @@ const onlyLoggedIn = require('../lib/only-logged-in');
 module.exports = (dataLoader) => {
   const projectsController = express.Router();
 
-  // Retrieve a list of projects
-  projectsController.get('/', (req, res) => {
-    dataLoader.getAllProjects({
-      page: req.query.page,
-      limit: req.query.count
-    })
+  // GET ALL THE PROJECTS FOR THE USER WITH ProgressPct FOR CURRENT USER
+
+  projectsController.get('/', onlyLoggedIn, (req, res) => {
+    dataLoader.getAllProjects(req.user.users_id) // we're getting the user all his projects
     .then(data => res.json(data))
     .catch(err => res.status(400).json(err));
   });
 
-  // Retrieve a single project
+  // RETRIEVE
   projectsController.get('/:id', (req, res) => {
     dataLoader.getSingleProject(req.params.id)
     .then(data => res.json(data))
@@ -25,11 +23,12 @@ module.exports = (dataLoader) => {
 
   // Create a new project
   projectsController.post('/', onlyLoggedIn, (req, res) => {
-
+    console.log('25 .. projects.js');
     project_data = {
-      ownerId: req.user.users_id,
+      adminUserId: req.user.users_id,
       title: req.body.title,
-      description: req.body.description
+      description: req.body.description,
+      deadline: req.body.deadline
     };
     dataLoader.createProject(project_data)
     .then(data => res.status(201).json(data))
@@ -39,32 +38,36 @@ module.exports = (dataLoader) => {
 
   // Modify an owned project
   projectsController.patch('/:id', onlyLoggedIn, (req, res) => {
-      return dataLoader.updateProject(req.params.id, {
-        title: req.body.title,
-        description: req.body.description
-    })
+    dataLoader.projectBelongsToUser(req.params.id, req.user.users_id)
+    .then( () => {
+      dataLoader.updateProject(req.params.id, {
+       title: req.body.title,
+       description: req.body.description,
+       deadline: req.body.deadline
+      })
+    }
+       )
     .then(data => res.json(data))
     .catch(err => res.status(400).json(err));
   });
 
 
-  // Delete an owned project
-  projectsController.delete('/:id', onlyLoggedIn, (req, res) => {
-    // First check if the project to be DELETEd belongs to the user making the request
-    dataLoader.projectBelongsToUser(req.params.id, req.user.id)
-    .then(() => {
-      return dataLoader.deleteProject(req.params.id);
-    })
-    .then(() => res.status(204).end())
-    .catch(err => res.status(400).json(err));
-  });
+  // Delete an owned project ******* MAY WORK ON DELETE LATER
+  // projectsController.delete('/:id', onlyLoggedIn, (req, res) => {
+  //   // First check if the project to be DELETEd belongs to the user making the request
+  //   dataLoader.projectBelongsToUser(req.params.id, req.user.id)
+  //   .then(() => {
+  //     return dataLoader.deleteProject(req.params.id);
+  //   })
+  //   .then(() => res.status(204).end())
+  //   .catch(err => res.status(400).json(err));
+  // });
 
 
   // Retrieve all the tasks for a single project
   projectsController.get('/:id/tasks', (req, res) => {
-    // TODO: this is up to you to implement :)
     const this_project_id = req.params.id;
-    dataLoader.getAlltasksForproject(this_project_id)
+    dataLoader.getAllTasksForProject(this_project_id)
     .then(data => res.json(data))
     .catch(err => res.status(400).json(err));
     // res.status(500).json({ error: 'not implemented' });
@@ -72,18 +75,30 @@ module.exports = (dataLoader) => {
 
   // Create a new task under a project
   projectsController.post('/:id/tasks', onlyLoggedIn, (req, res) => {
-    // TODO: this is up to you to implement :)
     const user_id = req.user.users_id;
     const project_id = Number(req.params.id);
     const task_data = {
       projectId: project_id,
       title: req.body.title,
       url: req.body.url,
-      description: req.body.description
+      description: req.body.description,
+      deadline: req.body.deadline,
+      priority: req.body.priority
     }
-    dataLoader.projectBelongsToUser(project_id, user_id)
+
+    if (!task_data.deadline){
+      task_data.deadline=null;
+    } // DAFAULT FOR DEADLINE
+    if (!task_data.priority){
+      task_data.priority=null;
+    } // DAFAULT FOR PRIORITY
+    if (!task_data.description){
+      task_data.description='';
+    } // DAFAULT FOR DESCRIPTION
+
+    dataLoader.projectBelongsToUser(req.params.id, user_id)
     .then(() => {
-      dataLoader.createtask(task_data) } )
+      dataLoader.createTask(task_data) } )
     .then(data => res.status(201).json(data))
     .catch(err => res.status(400).json(err));
     // res.status(500).json({ error: 'not implemented' });

@@ -16,7 +16,9 @@ USE middlewhere;
 DROP TABLE IF EXISTS `middlewhere`.`users` ;
 CREATE TABLE middlewhere.`users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `email` varchar(100) NOT NULL DEFAULT '',
+  `email` varchar(50) NOT NULL UNIQUE,
+  `firstName` varchar(50) NOT NULL DEFAULT '',
+  `lastName` varchar(50) NOT NULL DEFAULT '',
   `password` varchar(60) NOT NULL DEFAULT '',
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
