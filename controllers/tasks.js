@@ -5,37 +5,29 @@ const onlyLoggedIn = require('../lib/only-logged-in');
 module.exports = (dataLoader) => {
   const tasksController = express.Router();
 
-
-  //
-  // tasksController.get('/', onlyLoggedIn, (req, res) => {
-  //     const users_id = req.user.users_id;
-  //     dataLoader.taskBelongsToUser(users_id)
-  //     .then(() => dataLoader.updatetask(req.params.id, real_data))
-  //     .then(data => {
-  //       console.log(data);
-  //     return res.json(data)})
-  //     .catch(err => res.status(400).json(err));
-  // });
-
-
   // Modify a task
   tasksController.patch('/:id', onlyLoggedIn, (req, res) => {
-      // ** MOCK DATA *******************
-      const mock_user = 1;
-      const mock_data = {
-        title: "how to run quickly -- ger -- er",
-        projectId : 1,
-        url:"bolt.com" // req.body ...
-      } // ******************************
-      const real_data = {
+      const task_data = {
+        projectId: req.body.project_id, /// ADDED REQ..projectId
         title: req.body.title,
-        projectId : req.body.projectId,
         url: req.body.url,
-        description: req.body.description
+        description: req.body.description,
+        deadline: req.body.deadline,
+        priority: req.body.priority
       }
+      if (!task_data.deadline){
+        task_data.deadline=null;
+      } // DAFAULT FOR DEADLINE
+      if (!task_data.priority){
+        task_data.priority=null;
+      } // DAFAULT FOR PRIORITY
+      if (!task_data.description){
+        task_data.description='';
+      } // DAFAULT FOR DESCRIPTION
+
       const real_user = req.user.users_id;
       dataLoader.taskBelongsToUser(req.params.id, real_user)
-      .then(() => dataLoader.updatetask(req.params.id, real_data))
+      .then(() => dataLoader.updatetask(req.params.id, task_data))
       .then(data => {
         console.log(data);
       return res.json(data)})
@@ -53,18 +45,17 @@ module.exports = (dataLoader) => {
   // });
 
   // Delete a task
-  tasksController.delete('/:id', onlyLoggedIn, (req, res) => {
-    // TODO: this is up to you to implement :)
-    const real_user = req.user.users_id; //
-    const task_id = req.params.id;
-
-    dataLoader.taskBelongsToUser(task_id, real_user)
-    .then(() => {
-      return dataLoader.deletetask(task_id);
-    })
-    .then(() => res.status(204).end())
-    .catch(err => res.status(400).json(err));
-  });
-
-  return tasksController;
+  // tasksController.delete('/:id', onlyLoggedIn, (req, res) => {
+  //   const real_user = req.user.users_id; //
+  //   const task_id = req.params.id;
+  //
+  //   dataLoader.taskBelongsToUser(task_id, real_user)
+  //   .then(() => {
+  //     return dataLoader.deletetask(task_id);
+  //   })
+  //   .then(() => res.status(204).end())
+  //   .catch(err => res.status(400).json(err));
+  // });
+  //
+  // return tasksController;
 };

@@ -65,9 +65,8 @@ module.exports = (dataLoader) => {
 
   // Retrieve all the tasks for a single project
   projectsController.get('/:id/tasks', (req, res) => {
-
     const this_project_id = req.params.id;
-    dataLoader.getAlltasksForproject(this_project_id)
+    dataLoader.getAllTasksForProject(this_project_id)
     .then(data => res.json(data))
     .catch(err => res.status(400).json(err));
     // res.status(500).json({ error: 'not implemented' });
@@ -81,11 +80,24 @@ module.exports = (dataLoader) => {
       projectId: project_id,
       title: req.body.title,
       url: req.body.url,
-      description: req.body.description
+      description: req.body.description,
+      deadline: req.body.deadline,
+      priority: req.body.priority
     }
-    dataLoader.projectBelongsToUser(project_id, user_id)
+
+    if (!task_data.deadline){
+      task_data.deadline=null;
+    } // DAFAULT FOR DEADLINE
+    if (!task_data.priority){
+      task_data.priority=null;
+    } // DAFAULT FOR PRIORITY
+    if (!task_data.description){
+      task_data.description='';
+    } // DAFAULT FOR DESCRIPTION
+
+    dataLoader.projectBelongsToUser(req.params.id, user_id)
     .then(() => {
-      dataLoader.createtask(task_data) } )
+      dataLoader.createTask(task_data) } )
     .then(data => res.status(201).json(data))
     .catch(err => res.status(400).json(err));
     // res.status(500).json({ error: 'not implemented' });
