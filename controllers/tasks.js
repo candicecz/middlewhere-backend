@@ -7,6 +7,7 @@ module.exports = (dataLoader) => {
 
   // Modify a task
   tasksController.patch('/:id', onlyLoggedIn, (req, res) => {
+
       const task_data = {
         projectId: req.body.project_id, /// ADDED REQ..projectId
         title: req.body.title,
@@ -15,6 +16,7 @@ module.exports = (dataLoader) => {
         deadline: req.body.deadline,
         priority: req.body.priority
       }
+
       if (!task_data.deadline){
         task_data.deadline=null;
       } // DAFAULT FOR DEADLINE
@@ -27,7 +29,7 @@ module.exports = (dataLoader) => {
 
       const real_user = req.user.users_id;
       dataLoader.taskBelongsToUser(req.params.id, real_user)
-      .then(() => dataLoader.updatetask(req.params.id, task_data))
+      .then(() => dataLoader.updateTask(req.params.id, task_data))
       .then(data => {
         console.log(data);
       return res.json(data)})
@@ -44,6 +46,30 @@ module.exports = (dataLoader) => {
   //   .catch(err => res.status(400).json(err));
   // });
 
+
+  tasksController.patch('/:id', onlyLoggedIn, (req, res) => {
+      const real_user = req.user.users_id;
+      dataLoader.taskBelongsToUser(req.params.id, real_user)
+      .then(() => dataLoader.updateTask(req.params.id, task_data))
+      .then(data => {
+        console.log(data);
+      return res.json(data)})
+      .catch(err => res.status(400).json(err));
+  });
+
+  tasksController.post('/:projectId/:taskId', onlyLoggedIn, (req, res) => {
+      const userId = req.user.users_id;
+      const projectId = req.params.projectId;
+      const taskId = req.params.taskId;
+      dataLoader.projectBelongsToUser(projectId, userId)
+      .then(() => {
+        dataLoader.assignUsersForTask(userId, taskId);})
+      .then(data => {
+        console.log(data, '<<<<<<<');
+      return res.json(data)})
+      .catch(err => res.status(400).json(err));
+  });
+
   // Delete a task
   // tasksController.delete('/:id', onlyLoggedIn, (req, res) => {
   //   const real_user = req.user.users_id; //
@@ -57,5 +83,5 @@ module.exports = (dataLoader) => {
   //   .catch(err => res.status(400).json(err));
   // });
   //
-  // return tasksController;
+  return tasksController;
 };
