@@ -6,11 +6,20 @@ module.exports = (dataLoader) => {
   const tasksController = express.Router();
 
 
+  //
+  // tasksController.get('/', onlyLoggedIn, (req, res) => {
+  //     const users_id = req.user.users_id;
+  //     dataLoader.taskBelongsToUser(users_id)
+  //     .then(() => dataLoader.updatetask(req.params.id, real_data))
+  //     .then(data => {
+  //       console.log(data);
+  //     return res.json(data)})
+  //     .catch(err => res.status(400).json(err));
+  // });
+
+
   // Modify a task
   tasksController.patch('/:id', onlyLoggedIn, (req, res) => {
-    // TODO: this is up to you to implement :)
-    // TODO: make sure to verify user
-
       // ** MOCK DATA *******************
       const mock_user = 1;
       const mock_data = {
@@ -25,7 +34,6 @@ module.exports = (dataLoader) => {
         description: req.body.description
       }
       const real_user = req.user.users_id;
-
       dataLoader.taskBelongsToUser(req.params.id, real_user)
       .then(() => dataLoader.updatetask(req.params.id, real_data))
       .then(data => {
@@ -43,10 +51,6 @@ module.exports = (dataLoader) => {
   //   .then(data => res.json(data))
   //   .catch(err => res.status(400).json(err));
   // });
-
-
-
-
 
   // Delete a task
   tasksController.delete('/:id', onlyLoggedIn, (req, res) => {

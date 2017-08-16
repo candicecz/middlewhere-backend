@@ -57,14 +57,13 @@ module.exports = (dataLoader) => {
 
   // Retrieve current user
   authController.get('/me', onlyLoggedIn, (req, res) => {
-    console.log('60' , req.sessionToken);
+    // console.log('60' , req.sessionToken);
     dataLoader.getUserFromSession(req.sessionToken)
     .then(ans => {
       const email = ans.users_email;
       const HASH = md5(email);
       const hashed = "https://www.gravatar.com/avatar/"+HASH;
       ans.avatarUrl = hashed;
-      console.log(ans);
       return ans;
     })
     .then(ans => res.status(200).json(ans))
