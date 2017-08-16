@@ -61,12 +61,18 @@ module.exports = (dataLoader) => {
       const userId = req.user.users_id;
       const projectId = req.params.projectId;
       const taskId = req.params.taskId;
+      var assigneeId = userId;
+
+      if (req.body && req.body.assigneeId){
+        assigneeId=req.body.assigneeId;
+        console.log('67 t.js ' , req.body);
+      };
+      console.log('70 t.js ' , assigneeId);
       dataLoader.projectBelongsToUser(projectId, userId)
       .then(() => {
-        dataLoader.assignUsersForTask(userId, taskId);})
+        return dataLoader.assignUsersForTask(assigneeId, taskId);})
       .then(data => {
-        console.log(data, '<<<<<<<');
-      return res.json(data)})
+        return res.json(data[0])})
       .catch(err => res.status(400).json(err));
   });
 
