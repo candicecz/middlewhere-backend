@@ -57,23 +57,37 @@ module.exports = (dataLoader) => {
       .catch(err => res.status(400).json(err));
   });
 
-  tasksController.post('/:projectId/:taskId', onlyLoggedIn, (req, res) => {
+
+  tasksController.post('/:taskId/assigned', onlyLoggedIn, (req, res) => {
       const userId = req.user.users_id;
-      const projectId = req.params.projectId;
+      var projectId;
       const taskId = req.params.taskId;
       var assigneeId = userId;
-
       if (req.body && req.body.assigneeId){
         assigneeId=req.body.assigneeId;
-        console.log('67 t.js ' , req.body);
       };
       console.log('70 t.js ' , assigneeId);
-      dataLoader.projectBelongsToUser(projectId, userId)
+      dataLoader.getAllProjectsForTask(taskId)
+      .then(project_Id => {
+        console.log(project_Id);
+        dataLoader.projectBelongsToUser(project_Id, userId)
+      })
       .then(() => {
         return dataLoader.assignUsersForTask(assigneeId, taskId);})
       .then(data => {
         return res.json(data[0])})
       .catch(err => res.status(400).json(err));
+  });
+
+  // RETRIEVE USERS THAT ARE ASSIGNED FOR A GIVEN TASK
+  tasksController.get('/:id/assigned', onlyLoggedIn, (req, res) => {
+    const taskId = req.params.id;
+    dataLoader.getAllUsersForTask(taskId)
+    .then(users => {
+      console.log(users);
+      return res.json(users)
+    })
+    .catch(err => res.status(400).json(err));
   });
 
   // Delete a task

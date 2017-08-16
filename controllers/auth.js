@@ -13,6 +13,7 @@ module.exports = (dataLoader) => {
       lastName: req.body.lastName,
       password: req.body.password
     };
+    console.log(userData);
     dataLoader.createUser(userData)
     .then(ans => {
       const email = ans.email;
@@ -22,7 +23,8 @@ module.exports = (dataLoader) => {
       return ans;
     })
     .then(user => res.status(201).json(user))
-    .catch(err => res.status(400).json(err));
+    .catch(err => { console.log(err);
+      res.status(400).json(err)});
   });
 
   // Create a new session (login)
