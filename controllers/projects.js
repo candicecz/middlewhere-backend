@@ -6,7 +6,8 @@ module.exports = (dataLoader) => {
   const projectsController = express.Router();
 
   // GET ALL THE PROJECTS FOR THE USER WITH ProgressPct FOR CURRENT USER
-  projectsController.get('/', (req, res) => {
+
+  projectsController.get('/', onlyLoggedIn, (req, res) => {
     dataLoader.getAllProjects(req.user.users_id) // we're getting the user all his projects
     .then(data => res.json(data))
     .catch(err => res.status(400).json(err));
